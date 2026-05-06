@@ -316,33 +316,55 @@ nav[aria-label="Primary"] a:hover { color: var(--fg); text-decoration: none; }
 .fc-value.flat { color: var(--muted); }
 .fc-value.delta { color: #22c55e; }
 
-/* Harvest card */
-.harvest-card {
+/* Phase cards — '01 The Build' and '02 The Harvest' */
+.phase-card {
   margin-top: 22px;
-  display: flex;
-  gap: 18px;
-  padding: 20px;
+  padding: 22px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
-.harvest-num {
-  font-size: 56px;
+.phase-head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.phase-num {
+  flex-shrink: 0;
+  font-size: 52px;
   font-weight: 900;
   line-height: 1;
-  color: color-mix(in srgb, var(--accent) 25%, transparent);
-  flex-shrink: 0;
   letter-spacing: -0.04em;
+  color: color-mix(in srgb, var(--accent) 30%, transparent);
+  min-width: 64px;
+  text-align: left;
+  font-variant-numeric: tabular-nums;
 }
-.harvest-body { flex: 1; min-width: 0; }
-.harvest-title { margin: 0 0 4px; font-size: 22px; letter-spacing: -0.01em; }
-.harvest-sub { margin: 0 0 16px; color: var(--muted); font-size: 14px; }
-.harvest-row { padding: 14px 16px; background: var(--bg-alt); border-radius: 12px; margin-bottom: 12px; }
+.phase-build .phase-num { color: color-mix(in srgb, var(--primary) 30%, transparent); }
+.phase-harvest .phase-num { color: color-mix(in srgb, var(--accent) 30%, transparent); }
+.phase-meta { flex: 1; min-width: 0; }
+.phase-title { margin: 0 0 4px; font-size: 22px; letter-spacing: -0.01em; }
+.phase-sub { margin: 0; color: var(--muted); font-size: 14px; }
+.phase-body { display: flex; flex-direction: column; gap: 14px; }
+.phase-body .chart-wrap,
+.phase-body .magic-year-banner,
+.phase-body .flat-compare { margin-top: 0; }
+.phase-body .chart-wrap {
+  background: var(--bg-alt);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* Harvest body bits (now nested inside phase-card) */
+.harvest-row { padding: 16px 18px; background: var(--bg-alt); border-radius: 12px; }
 .harvest-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
-.harvest-amount { font-size: 28px; font-weight: 900; letter-spacing: -0.01em; margin-top: 4px; font-variant-numeric: tabular-nums; }
-.harvest-period { font-size: 14px; font-weight: 500; color: var(--muted); margin-left: 4px; }
-.harvest-calc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.harvest-amount { font-size: 30px; font-weight: 900; letter-spacing: -0.01em; margin-top: 4px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.harvest-period { font-size: 15px; font-weight: 500; color: var(--muted); margin-left: 4px; }
+.harvest-calc { font-size: 13px; color: var(--muted); margin-top: 6px; }
 .harvest-note { font-size: 13px; color: var(--fg-soft); margin: 0; line-height: 1.6; }
 .harvest-note code { background: var(--bg-alt); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
 
@@ -569,12 +591,18 @@ details p { margin-top: 12px; }
   .fc-row { grid-template-columns: 1fr; gap: 10px; }
   .fc-value { font-size: 16px; }
 
-  /* Harvest */
-  .harvest-card { padding: 16px; gap: 12px; }
-  .harvest-num { font-size: 38px; }
-  .harvest-title { font-size: 18px; }
+  /* Phase cards — number drops above the title row on phones */
+  .phase-card { padding: 16px; border-radius: 12px; }
+  .phase-head { gap: 12px; padding-bottom: 12px; margin-bottom: 12px; }
+  .phase-num { font-size: 36px; min-width: 48px; }
+  .phase-title { font-size: 18px; }
+  .phase-sub { font-size: 13px; }
+
+  /* Harvest pieces */
+  .harvest-row { padding: 12px 14px; }
   .harvest-amount { font-size: 22px; }
-  .harvest-row { padding: 12px; }
+  .harvest-period { font-size: 13px; }
+  .harvest-calc { font-size: 12px; }
   .harvest-note { font-size: 12.5px; }
 
   /* Content */
@@ -611,6 +639,16 @@ details p { margin-top: 12px; }
   #chart { max-height: 240px; }
   .card-value { font-size: 17px; }
   .card.subtle .card-value { font-size: 15px; }
+
+  /* Phase head: stack number ABOVE title on tiny screens */
+  .phase-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .phase-num { font-size: 30px; min-width: 0; }
+
+  /* Inflation banner: stack icon above text */
+  .inflation-banner { flex-direction: column; align-items: flex-start; }
+
+  /* Harvest amount tames down further */
+  .harvest-amount { font-size: 20px; }
 }
 
 /* Landscape phones: keep chart breathable */
