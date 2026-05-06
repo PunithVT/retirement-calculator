@@ -339,10 +339,48 @@ The author is not responsible for any financial decisions made on the basis of t
 
 ---
 
+## Author
+
+**Punith V T** — AI Product Developer at [Rooman Technologies](https://rooman.com), Bengaluru.
+
+Building production AI systems: voice agents, conversational AI, AWS Bedrock, LangChain, Model Context Protocol, FastAPI microservices. B.E. Computer Science (Data Science), MVJ College of Engineering.
+
+This calculator was built as an open-source contribution to Indian personal finance — because retirement math should not live behind a sign-up wall.
+
+### Connect
+
+[![GitHub](https://img.shields.io/badge/GitHub-PunithVT-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/PunithVT)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-punithvt-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/punithvt)
+[![Email](https://img.shields.io/badge/Email-punithvt%40gmail.com-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:punithvt@gmail.com)
+[![Kaggle](https://img.shields.io/badge/Kaggle-punithvt-20BEFF?style=for-the-badge&logo=kaggle&logoColor=white)](https://kaggle.com/punithvt)
+[![HackerRank](https://img.shields.io/badge/HackerRank-punithvt-2EC866?style=for-the-badge&logo=hackerrank&logoColor=white)](https://www.hackerrank.com/punithvt)
+
+### Support this work
+
+If this calculator helped you build a better retirement plan, consider supporting future open-source work:
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://www.buymeacoffee.com/punithvt)
+[![Sponsor](https://img.shields.io/badge/GitHub-Sponsor-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/PunithVT)
+
+You can also support by:
+
+- **Starring this repository** — it surfaces the project to other Indian savers who need it
+- **Sharing it** with friends, on Twitter, Reddit r/IndiaInvestments, or your office Slack
+- **Filing issues** with bugs, edge cases, or feature requests
+- **Contributing a PR** — see the [Contributing](#contributing) section above
+
+### Open to
+
+- Consulting on **AI product development**, voice agents, and LLM-orchestration architecture
+- Speaking at **fintech, AI, or Indian developer-community events**
+- Collaborating on **open-source personal-finance tooling for India**
+
+---
+
 <div align="center">
 
-### If this saved you from a bad retirement plan, consider starring the repo.
+**[Live demo](https://punithvt.github.io/retirement-calculator/)**  ·  [Report a bug](https://github.com/PunithVT/retirement-calculator/issues)  ·  [Request a feature](https://github.com/PunithVT/retirement-calculator/issues/new)  ·  [Star the repo](https://github.com/PunithVT/retirement-calculator)
 
-**Built with care by [Punith VT](https://github.com/PunithVT)** · [Report a bug](https://github.com/PunithVT/retirement-calculator/issues) · [Request a feature](https://github.com/PunithVT/retirement-calculator/issues/new)
+If this saved you from a bad retirement plan, please share it with someone who needs it.
 
 </div>

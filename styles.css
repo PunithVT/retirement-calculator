@@ -312,11 +312,28 @@ details p { margin-top: 12px; }
 /* Footer */
 .site-footer {
   border-top: 1px solid var(--border);
-  padding: 28px 0;
+  padding: 36px 0 28px;
   background: var(--bg-soft);
+  font-size: 14px;
+  color: var(--fg-soft);
 }
-.footer-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; color: var(--fg-soft); font-size: 14px; }
-.footer-row p { margin: 0; }
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+.footer-block p { margin: 0 0 8px; }
+.footer-title {
+  font-weight: 700;
+  color: var(--fg);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 10px !important;
+}
+.footer-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.footer-links a { color: var(--fg-soft); }
+.footer-links a:hover { color: var(--primary-d); }
 .muted { color: var(--muted); }
 
 /* Reduced motion */
@@ -338,6 +355,7 @@ details p { margin-top: 12px; }
   .calc-form { padding: 18px; }
   .grid { gap: 12px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
   .cards { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 }
 
 /* Phone: <= 640px */
@@ -452,8 +470,8 @@ details p { margin-top: 12px; }
   details p { font-size: 14px; }
 
   /* Footer */
-  .site-footer { padding: 22px 0; }
-  .footer-row { flex-direction: column; gap: 6px; font-size: 13px; }
+  .site-footer { padding: 28px 0 22px; font-size: 13px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 22px; }
 }
 
 /* Very small phones: <= 380px */
