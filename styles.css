@@ -116,7 +116,15 @@ nav[aria-label="Primary"] a:hover { color: var(--fg); text-decoration: none; }
 .btn-ghost { background: transparent; color: var(--fg); border-color: var(--border); }
 .btn-ghost:hover { background: var(--bg-soft); text-decoration: none; }
 
-.trust { list-style: none; padding: 0; margin: 24px 0 0; display: flex; flex-wrap: wrap; gap: 18px; color: var(--muted); font-size: 14px; }
+.trust { list-style: none; padding: 0; margin: 24px 0 0; display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--muted); font-size: 14px; }
+.trust li { position: relative; padding-left: 14px; }
+.trust li::before {
+  content: "";
+  position: absolute; left: 0; top: 50%;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--primary);
+  transform: translateY(-50%);
+}
 
 /* Calculator */
 .calc { padding: 44px 0; background: var(--bg-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
