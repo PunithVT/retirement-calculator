@@ -46,12 +46,20 @@
     const i = p.inflation / 100;
     const ih = p.healthInflation / 100;
     const stepUp = p.stepUpPct / 100;
+    // Withdrawal step-up: how the year-over-year retirement withdrawal grows.
+    // Default = general inflation (the typical retirement model), but
+    // overridable so users can stress-test "flat withdrawals" or "above CPI".
+    const wStep = (p.withdrawalStepUp != null && !isNaN(p.withdrawalStepUp))
+      ? p.withdrawalStepUp / 100
+      : i;
     const monthlyR1 = Math.pow(1 + r1, 1 / 12) - 1;
 
     let corpus = p.existingCorpus;
     let sip = p.monthlySip;
     let totalInvested = p.existingCorpus;
-    let magicYear = null;          // first year where growth > contribution
+    let magicYear = null;
+    let magicYearReturns = 0;
+    let magicYearContrib = 0;
     const series = [];
     series.push({ age: p.currentAge, corpus, phase: "acc" });
 
@@ -86,6 +94,8 @@
 
       if (magicYear === null && contributedThisYear > 0 && grewBy > contributedThisYear) {
         magicYear = p.currentAge + y;
+        magicYearReturns = grewBy;
+        magicYearContrib = contributedThisYear;
       }
 
       if (p.mode === "sip") sip = sip * (1 + stepUp);
@@ -103,7 +113,8 @@
     let finalYearExpense = firstYearExpense;
 
     for (let y = 1; y <= retireYears; y++) {
-      const yGen = firstYearGen * Math.pow(1 + i, y - 1);
+      // General expenses grow at withdrawal step-up; healthcare keeps its own (typically higher) rate.
+      const yGen = firstYearGen * Math.pow(1 + wStep, y - 1);
       const yHealth = firstYearHealth * Math.pow(1 + ih, y - 1);
       const yearExpense = yGen + yHealth;
 
@@ -115,13 +126,15 @@
         endingCorpus = corpus;
         series.push({ age: p.retirementAge + y, corpus: 0, phase: "ret", expense: yearExpense });
         for (let k = y + 1; k <= retireYears; k++) {
-          const ekGen = firstYearGen * Math.pow(1 + i, k - 1);
+          const ekGen = firstYearGen * Math.pow(1 + wStep, k - 1);
           const ekHealth = firstYearHealth * Math.pow(1 + ih, k - 1);
           series.push({ age: p.retirementAge + k, corpus: 0, phase: "short", expense: ekGen + ekHealth });
         }
         return {
           series, retireCorpus, firstYearExpense, firstYearGen, firstYearHealth,
-          lastsTill, endingCorpus, totalInvested, magicYear, finalYearExpense: yearExpense,
+          lastsTill, endingCorpus, totalInvested,
+          magicYear, magicYearReturns, magicYearContrib,
+          finalYearExpense: yearExpense,
           ranOut: true,
         };
       }
@@ -134,7 +147,9 @@
 
     return {
       series, retireCorpus, firstYearExpense, firstYearGen, firstYearHealth,
-      lastsTill, endingCorpus, totalInvested, magicYear, finalYearExpense,
+      lastsTill, endingCorpus, totalInvested,
+      magicYear, magicYearReturns, magicYearContrib,
+      finalYearExpense,
       ranOut: false,
     };
   }
@@ -183,7 +198,54 @@
   }
 
   // -- Render ----------------------------------------------------------------
-  function render(inputs, sim, additionalNeeded, costLate) {
+  function render(inputs, sim, additionalNeeded, costLate, flatSim) {
+    // Inflation projection banner: ₹X today → ₹Y in N years
+    const yrs = Math.max(0, inputs.retirementAge - inputs.currentAge);
+    const totalToday = (inputs.monthlyExpense || 0) + (inputs.monthlyHealth || 0);
+    const totalRetire = sim.firstYearExpense / 12;
+    const infBanner = $("inflationBanner");
+    if (infBanner) {
+      $("ibToday").textContent = fmtINR(totalToday);
+      $("ibFuture").textContent = fmtINR(totalRetire);
+      $("ibYears").textContent = yrs;
+      $("ibInf").textContent = inputs.inflation;
+    }
+
+    // Magic Year banner
+    const myBanner = $("magicYearBanner");
+    if (myBanner) {
+      if (sim.magicYear) {
+        myBanner.classList.remove("hidden");
+        $("myAge").textContent = sim.magicYear;
+        $("myReturns").textContent = fmtINR(sim.magicYearReturns);
+        $("myContrib").textContent = fmtINR(sim.magicYearContrib);
+      } else {
+        myBanner.classList.add("hidden");
+      }
+    }
+
+    // Harvest section: starting monthly withdrawal
+    const harvestStart = $("harvestStart");
+    if (harvestStart) {
+      $("harvestStart").textContent = fmtINR(sim.firstYearExpense / 12);
+      $("harvestStartCalc").textContent = `${fmtINR(totalToday)}/mo today × ${inputs.inflation}% inflation × ${yrs} years`;
+    }
+
+    // Step-up vs flat delta
+    const flatBox = $("flatCompareBox");
+    if (flatBox) {
+      if (flatSim && inputs.stepUpPct > 0) {
+        const delta = sim.retireCorpus - flatSim.retireCorpus;
+        flatBox.classList.remove("hidden");
+        $("flatWith").textContent = fmtINR(sim.retireCorpus);
+        $("flatWithout").textContent = fmtINR(flatSim.retireCorpus);
+        $("flatDelta").textContent = (delta >= 0 ? "+" : "") + fmtINR(delta);
+        $("flatStepPct").textContent = inputs.stepUpPct;
+      } else {
+        flatBox.classList.add("hidden");
+      }
+    }
+
     const verdict = $("verdict");
     const verdictSub = $("verdictSub");
     const headline = $("resultHeadline");
@@ -276,7 +338,7 @@
     }
 
     renderBreakdown(inputs, sim);
-    drawChart(sim);
+    drawChart(sim, flatSim);
   }
 
   // -- Year-1 expense category breakdown -------------------------------------
@@ -324,7 +386,7 @@
   }
 
   // -- Chart (canvas) --------------------------------------------------------
-  function drawChart(sim) {
+  function drawChart(sim, flatSim) {
     const canvas = $("chart");
     const ctx = canvas.getContext("2d");
     const dpr = window.devicePixelRatio || 1;
@@ -346,7 +408,12 @@
 
     const minAge = data[0].age;
     const maxAge = data[data.length - 1].age;
-    const maxCorpus = Math.max(...data.map(d => d.corpus), 1);
+    const flatData = flatSim ? flatSim.series : null;
+    const maxCorpus = Math.max(
+      ...data.map(d => d.corpus),
+      flatData ? Math.max(...flatData.map(d => d.corpus)) : 0,
+      1,
+    );
 
     const css = getComputedStyle(document.body);
     const fg = css.getPropertyValue("--fg") || "#0b1220";
@@ -409,6 +476,23 @@
       }
     };
 
+    // Draw "flat / no step-up" comparison line first (behind main).
+    if (flatData) {
+      const flatAccPts = flatData.filter(d => d.phase === "acc");
+      if (flatAccPts.length > 1) {
+        ctx.beginPath();
+        flatAccPts.forEach((d, idx) => {
+          const x = xFor(d.age), y = yFor(d.corpus);
+          if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.strokeStyle = muted.trim();
+        ctx.setLineDash([6, 5]);
+        ctx.lineWidth = 1.6;
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
+
     const accIdx = data.findIndex(d => d.phase !== "acc");
     if (accIdx > 0) {
       drawSegment((_, i) => i <= accIdx, "#22c55e");
@@ -452,6 +536,8 @@
 
   // -- Event wiring ----------------------------------------------------------
   function readInputs() {
+    const wInput = $("withdrawalStepUp");
+    const wRaw = wInput && wInput.value !== "" ? parseFloat(wInput.value) : NaN;
     return {
       mode: state.mode,
       currentAge: num("currentAge"),
@@ -468,6 +554,7 @@
       healthInflation: num("healthInflation"),
       stepUpPct: num("stepUp"),
       annualTopUp: num("annualTopUp"),
+      withdrawalStepUp: isNaN(wRaw) ? null : wRaw,
     };
   }
 
@@ -489,7 +576,15 @@
     const sim = simulate(inputs);
     const additional = sim.ranOut ? requiredAdditionalSip(inputs) : 0;
     const costLate = solveStartingLate(inputs, 10);
-    render(inputs, sim, additional, costLate);
+
+    // Comparison: same inputs but with step-up disabled (flat SIP).
+    // We only need the accumulation-phase corpus over time, not the retirement run.
+    let flatSim = null;
+    if (inputs.mode === "sip" && inputs.stepUpPct > 0) {
+      flatSim = simulate({ ...inputs, stepUpPct: 0 });
+    }
+
+    render(inputs, sim, additional, costLate, flatSim);
   }
 
   function bindPresets() {

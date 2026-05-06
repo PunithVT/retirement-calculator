@@ -308,6 +308,12 @@
               <input type="number" inputmode="decimal" id="annualTopUp" min="0" step="5000" value="0" />
               <small>₹ extra lump added yearly</small>
             </label>
+
+            <label class="field">
+              <span>Withdrawal step-up</span>
+              <input type="number" inputmode="decimal" id="withdrawalStepUp" min="0" max="20" step="0.5" placeholder="follows inflation" />
+              <small>% per year (blank = inflation)</small>
+            </label>
           </div>
 
           <div class="actions">
@@ -315,6 +321,16 @@
             <button type="reset" class="btn btn-ghost" id="reset-btn">Reset</button>
           </div>
         </form>
+
+        <!-- INFLATION PROJECTION BANNER -->
+        <div class="inflation-banner" id="inflationBanner" aria-live="polite">
+          <div class="ib-icon" aria-hidden="true">▲</div>
+          <p>
+            <span id="ibToday">—</span>/month today
+            <span class="ib-arrow">→</span>
+            <strong id="ibFuture">—</strong>/month in <span id="ibYears">—</span> years at <span id="ibInf">—</span>% inflation
+          </p>
+        </div>
 
         <!-- RESULTS -->
         <section class="results" id="results" aria-live="polite">
@@ -386,14 +402,60 @@
             <ul class="bd-list" id="bdList"></ul>
           </div>
 
+          <!-- MAGIC YEAR BANNER -->
+          <div class="magic-year-banner hidden" id="magicYearBanner">
+            <div class="my-tag">MAGIC YEAR</div>
+            <p>At <strong>age <span id="myAge">—</span></strong> your returns (<strong id="myReturns">—</strong>) beat contributions (<strong id="myContrib">—</strong>). Compounding takes over.</p>
+          </div>
+
+          <!-- CORPUS GROWTH — THE HOCKEY STICK -->
           <div class="chart-wrap">
-            <h4>Corpus over your lifetime</h4>
+            <div class="chart-head">
+              <h4>Corpus growth — the hockey stick</h4>
+              <span class="chart-sub" id="flatStepInfo"></span>
+            </div>
             <canvas id="chart" width="900" height="320" aria-label="Corpus over time chart" role="img"></canvas>
             <div class="legend">
-              <span><i class="sw" style="background:#22c55e"></i>Accumulation phase</span>
-              <span><i class="sw" style="background:#0ea5e9"></i>Retirement phase</span>
+              <span><i class="sw" style="background:#22c55e"></i>Accumulation</span>
+              <span><i class="sw" style="background:#0ea5e9"></i>Retirement</span>
               <span><i class="sw" style="background:#ef4444"></i>Shortfall</span>
               <span><i class="sw" style="background:#f59e0b"></i>Magic Year</span>
+              <span class="legend-flat"><i class="sw sw-dashed"></i>Flat (no step-up)</span>
+            </div>
+
+            <!-- step-up vs flat comparison -->
+            <div class="flat-compare hidden" id="flatCompareBox">
+              <div class="fc-row">
+                <div>
+                  <div class="fc-label">With <span id="flatStepPct">5</span>% step-up</div>
+                  <div class="fc-value with"><span id="flatWith">—</span></div>
+                </div>
+                <div>
+                  <div class="fc-label">Flat — no step-up</div>
+                  <div class="fc-value flat"><span id="flatWithout">—</span></div>
+                </div>
+                <div>
+                  <div class="fc-label">Step-up adds</div>
+                  <div class="fc-value delta"><span id="flatDelta">—</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- THE HARVEST -->
+          <div class="harvest-card">
+            <div class="harvest-num" aria-hidden="true">02</div>
+            <div class="harvest-body">
+              <h4 class="harvest-title">The Harvest</h4>
+              <p class="harvest-sub">Turning corpus into a monthly paycheck</p>
+              <div class="harvest-row">
+                <div>
+                  <div class="harvest-label">Starting monthly withdrawal at retirement</div>
+                  <div class="harvest-amount"><span id="harvestStart">—</span><span class="harvest-period">/month</span></div>
+                  <div class="harvest-calc" id="harvestStartCalc">—</div>
+                </div>
+              </div>
+              <p class="harvest-note">Use the <strong>Withdrawal step-up</strong> field above to model how the year-over-year withdrawal grows during retirement. Leave blank to follow general inflation, set to <code>0</code> for flat withdrawals (stress test), or set higher for lifestyle creep.</p>
             </div>
           </div>
         </section>

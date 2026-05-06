@@ -244,6 +244,108 @@ nav[aria-label="Primary"] a:hover { color: var(--fg); text-decoration: none; }
 .card-value { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; margin-top: 6px; font-variant-numeric: tabular-nums; }
 .card-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
+/* Inflation projection banner */
+.inflation-banner {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--warn) 12%, var(--bg));
+  border: 1px solid color-mix(in srgb, var(--warn) 50%, var(--border));
+  border-radius: 12px;
+  color: var(--fg);
+  font-size: 14px;
+}
+.inflation-banner.hidden { display: none; }
+.ib-icon {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--warn) 25%, transparent);
+  color: var(--warn);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 13px;
+}
+.inflation-banner p { margin: 0; line-height: 1.5; }
+.inflation-banner strong { color: var(--warn); font-weight: 800; }
+.ib-arrow { color: var(--muted); margin: 0 4px; }
+
+/* Magic Year banner */
+.magic-year-banner {
+  margin-top: 18px;
+  border-left: 4px solid var(--warn);
+  background: color-mix(in srgb, var(--warn) 8%, var(--bg));
+  padding: 14px 18px;
+  border-radius: 8px;
+}
+.magic-year-banner.hidden { display: none; }
+.my-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--warn);
+  margin-bottom: 6px;
+}
+.magic-year-banner p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--fg); }
+.magic-year-banner strong { color: var(--warn); }
+.magic-year-banner p strong:first-child { color: var(--fg); font-weight: 800; }
+
+/* Chart head */
+.chart-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.chart-sub { color: var(--muted); font-size: 13px; }
+.legend-flat .sw-dashed {
+  display: inline-block; width: 18px; height: 0;
+  border-top: 2px dashed var(--muted);
+  margin-right: 6px; vertical-align: middle;
+  background: transparent !important;
+}
+
+/* Step-up vs flat comparison */
+.flat-compare {
+  margin-top: 14px;
+  padding: 14px 16px;
+  background: var(--bg-alt);
+  border-radius: 10px;
+}
+.flat-compare.hidden { display: none; }
+.fc-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.fc-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 4px; }
+.fc-value { font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.fc-value.with { color: #f59e0b; }
+.fc-value.flat { color: var(--muted); }
+.fc-value.delta { color: #22c55e; }
+
+/* Harvest card */
+.harvest-card {
+  margin-top: 22px;
+  display: flex;
+  gap: 18px;
+  padding: 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.harvest-num {
+  font-size: 56px;
+  font-weight: 900;
+  line-height: 1;
+  color: color-mix(in srgb, var(--accent) 25%, transparent);
+  flex-shrink: 0;
+  letter-spacing: -0.04em;
+}
+.harvest-body { flex: 1; min-width: 0; }
+.harvest-title { margin: 0 0 4px; font-size: 22px; letter-spacing: -0.01em; }
+.harvest-sub { margin: 0 0 16px; color: var(--muted); font-size: 14px; }
+.harvest-row { padding: 14px 16px; background: var(--bg-alt); border-radius: 12px; margin-bottom: 12px; }
+.harvest-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; font-weight: 600; }
+.harvest-amount { font-size: 28px; font-weight: 900; letter-spacing: -0.01em; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.harvest-period { font-size: 14px; font-weight: 500; color: var(--muted); margin-left: 4px; }
+.harvest-calc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.harvest-note { font-size: 13px; color: var(--fg-soft); margin: 0; line-height: 1.6; }
+.harvest-note code { background: var(--bg-alt); padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+
 /* Breakdown */
 .breakdown {
   margin-top: 22px;
@@ -453,6 +555,27 @@ details p { margin-top: 12px; }
   .chart-wrap h4 { font-size: 15px; }
   #chart { max-height: 280px; }
   .legend { gap: 10px 14px; font-size: 12px; }
+
+  /* Inflation banner */
+  .inflation-banner { padding: 10px 12px; gap: 10px; font-size: 13px; }
+  .ib-icon { width: 24px; height: 24px; font-size: 11px; }
+
+  /* Magic Year banner */
+  .magic-year-banner { padding: 12px 14px; }
+  .magic-year-banner p { font-size: 14px; }
+
+  /* Flat compare */
+  .flat-compare { padding: 12px; }
+  .fc-row { grid-template-columns: 1fr; gap: 10px; }
+  .fc-value { font-size: 16px; }
+
+  /* Harvest */
+  .harvest-card { padding: 16px; gap: 12px; }
+  .harvest-num { font-size: 38px; }
+  .harvest-title { font-size: 18px; }
+  .harvest-amount { font-size: 22px; }
+  .harvest-row { padding: 12px; }
+  .harvest-note { font-size: 12.5px; }
 
   /* Content */
   .content { padding: 36px 0; }
