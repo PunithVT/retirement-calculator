@@ -341,7 +341,7 @@ The author is not responsible for any financial decisions made on the basis of t
 
 ## Author
 
-**Punith V T** — AI Product Developer at [Rooman Technologies](https://rooman.com), Bengaluru.
+**Punith V T** — AI Product Developer based in Bengaluru.
 
 Building production AI systems: voice agents, conversational AI, AWS Bedrock, LangChain, Model Context Protocol, FastAPI microservices. B.E. Computer Science (Data Science), MVJ College of Engineering.
 
