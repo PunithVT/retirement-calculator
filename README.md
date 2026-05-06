@@ -20,6 +20,35 @@ A free, private, blazing-fast retirement-corpus planner — built for India, usa
 
 ---
 
+## 🇮🇳 Built for India's young earners — because nobody else is solving this
+
+India has **~430 million people aged 20–35**, and a record share of them are now in their first salaried job, freelancing, or running side hustles. They want to retire — many even dream of **retiring early (FIRE)**. But almost none of them have a clear answer to the only question that matters:
+
+> _"How much do I actually need to invest **today** so my future self isn't broke at 65?"_
+
+Here's why that question is so hard to answer in India specifically:
+
+- 🏛 **No social safety net.** Unlike the US or EU, there's no Social Security cheque waiting. Your retirement is **100% your problem.** EPF and NPS help, but rarely cover a real urban lifestyle.
+- 📈 **Brutal inflation.** Indian CPI averages 6% — but **medical inflation is 10–14%**, education 8–12%, lifestyle creep is real. A ₹50k/month lifestyle today becomes ₹2.7L/month in 25 years.
+- 💸 **No employer pension.** Less than 12% of Indians work in formal-sector jobs with defined-benefit pensions. The other 88% are on their own.
+- 👨‍👩‍👧 **Joint-family safety net is fading.** Urban migration, smaller families, and rising elder-care costs mean you can't count on kids to fund retirement the way the previous generation could.
+- 🤷 **Mainstream advice is bad.** "Just invest in PPF" / "buy LIC" / "12% forever" advice has cost an entire generation of Indians their retirement security.
+- 🤐 **Existing calculators are gated.** Most are sign-up walls for advisory firms that want to sell you PMS, AIF, ULIPs, or insurance. They tell you the corpus number — then ask for your phone number to "discuss further."
+
+**This calculator solves that.** No phone number. No ad retargeting. No upsell. Just enter your numbers and get a brutally honest answer in 30 seconds:
+
+- ✅ **How much corpus** you need at retirement (in future rupees, not today's).
+- ✅ **Whether your current SIP** gets you there — to the year and the rupee.
+- ✅ **Exactly how much more** to invest each month if it doesn't.
+- ✅ **The cost of waiting** — what 10 more years of "I'll start next year" will cost you.
+- ✅ **The Magic Year** — when your money starts earning more than you save (the moment compounding "kicks in").
+
+> **If you are 22–35, earning, and unsure whether your retirement plan will hold — start here. It takes 60 seconds and it's free forever.**
+
+**[▶ Run your numbers now →](https://punithvt.github.io/retirement-calculator/)**
+
+---
+
 ## 🎯 What is this?
 
 Most online retirement calculators are either **too simplistic** ("assume 12% returns forever, ignore inflation") or buried under **sign-up walls, lead-gen forms, and aggressive upsells** for the parent advisory firm.
@@ -38,16 +67,42 @@ If it doesn't, the calculator tells you _exactly_ how much extra you need to inv
 |---|---|
 | 🧮 **Two modes** | SIP (monthly) **or** lumpsum (one-time) — not both bolted on as an afterthought. |
 | 📈 **Two-phase returns** | Different return assumptions for accumulation (pre-retirement) and withdrawal (post-retirement). Because no sane portfolio looks the same at 35 and 65. |
-| 🇮🇳 **Inflation-aware** | Every rupee of expense is grown to its future value before the corpus is checked. Defaults tuned for Indian CPI (~6%). |
-| 📊 **Year-by-year chart** | Canvas-rendered corpus curve — you see exactly when (or whether) you run out. |
+| 🇮🇳 **Inflation-aware (twice)** | General expenses inflated at CPI (~6%), **healthcare separately at ~10%** — the silent retirement killer most calculators ignore. |
+| 🏷 **Lifestyle presets** | One-click sliders: Stretched Thin / Tight / Comfortable / Peaceful / Luxurious — pick what your retirement *feels* like, the calculator picks the numbers. |
+| 📊 **Year-by-year chart** | Canvas-rendered corpus curve with retirement and **Magic Year** markers — you see exactly when compounding takes over. |
 | 🎯 **Shortfall solver** | If your plan fails, a binary search finds the **exact** extra monthly SIP needed to make it work. |
-| 📈 **SIP step-up** | Model an annual % increase in contribution — what most salaried investors actually do. |
+| ⏰ **Cost of starting late** | Live comparison: what would the same plan cost if you delayed by 10 years? (Spoiler: roughly 2–3× the SIP.) |
+| 📈 **SIP step-up + annual top-up** | Annual % step-up *and* a fixed yearly top-up (bonuses, RSU vests, tax refunds) — what salaried investors actually do. |
+| ✨ **Magic Year + Wealth Multiplier** | The age your investment growth first beats your contributions, and how many × your money becomes by retirement. |
 | 🔒 **100% client-side** | No servers, no analytics, no cookies, no fonts loaded from third parties. Refresh and your data is gone. |
-| ⚡ **~25 KB gzipped** | Loads instantly even on patchy 3G. Zero JS dependencies. |
+| ⚡ **~30 KB gzipped** | Loads instantly even on patchy 3G. Zero JS dependencies. |
 | 🌗 **Light + dark mode** | Auto-follows `prefers-color-scheme`. |
 | ♿ **Accessible** | Skip link, ARIA, keyboard navigable, respects `prefers-reduced-motion`. |
 | 📱 **PWA-ready** | Installable on Android/iOS, works offline once visited. |
 | 🔍 **SEO best-in-class** | Semantic HTML, JSON-LD (`WebApplication`, `FAQPage`, `Organization`, `BreadcrumbList`), Open Graph, Twitter cards, sitemap, robots.txt. |
+
+---
+
+## 💡 "How much should I invest?" — quick reference
+
+These are rough **back-of-envelope numbers** for an Indian saver who wants a *comfortable* retirement (₹60k/month general + ₹8k/month healthcare, in today's rupees), retiring at 60, planning to age 85, assuming 12% pre-retirement and 8% post-retirement nominal returns at 6% general inflation + 10% healthcare inflation:
+
+| If you start at age… | Monthly SIP needed | Total invested over working life | Corpus at 60 |
+|---|---|---|---|
+| **22** | ~₹15,000/mo | ~₹65 L | ~₹6.5 Cr |
+| **25** | ~₹20,000/mo | ~₹75 L | ~₹6.5 Cr |
+| **28** | ~₹28,000/mo | ~₹95 L | ~₹6.5 Cr |
+| **30** | ~₹35,000/mo | ~₹1.1 Cr | ~₹6.5 Cr |
+| **35** | ~₹60,000/mo | ~₹1.5 Cr | ~₹6.5 Cr |
+| **40** | ~₹1,10,000/mo | ~₹2.2 Cr | ~₹6.5 Cr |
+
+> **Notice the pattern?** The 22-year-old invests **₹65 L total** to retire comfortably. The 40-year-old invests **₹2.2 Cr total** for the *same* outcome. **That ₹1.55 Cr difference is the price of waiting.**
+>
+> This is why the calculator has a "Cost of starting 10 yrs late" card. Time in the market beats timing the market — and it isn't even close.
+
+The table above assumes no SIP step-up. If you bump your SIP by 5% per year (which most salaried earners can), the required starting SIP drops by **30–40%**.
+
+> ⚠️ These are illustrative numbers. **Run your own scenario in the calculator** — change your salary trajectory, your lifestyle, your risk tolerance, your retirement age. The whole point is that there is no one-size-fits-all answer.
 
 ---
 

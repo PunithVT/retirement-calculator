@@ -213,6 +213,17 @@
         </header>
 
         <form id="calc-form" class="calc-form" autocomplete="off" novalidate>
+          <fieldset class="lifestyle-row" aria-label="Lifestyle preset">
+            <legend>Pick a lifestyle (sets monthly expenses)</legend>
+            <div class="presets" role="radiogroup">
+              <button type="button" class="preset" data-preset="stretched" data-gen="25000" data-health="3000">Stretched Thin<span>₹25k + ₹3k health</span></button>
+              <button type="button" class="preset" data-preset="tight" data-gen="40000" data-health="5000">Tight but Manageable<span>₹40k + ₹5k</span></button>
+              <button type="button" class="preset active" data-preset="comfortable" data-gen="60000" data-health="8000">Comfortable<span>₹60k + ₹8k</span></button>
+              <button type="button" class="preset" data-preset="peaceful" data-gen="100000" data-health="12000">Peaceful<span>₹1L + ₹12k</span></button>
+              <button type="button" class="preset" data-preset="luxurious" data-gen="200000" data-health="20000">Luxurious<span>₹2L + ₹20k</span></button>
+            </div>
+          </fieldset>
+
           <div class="grid">
             <label class="field">
               <span>Current age</span>
@@ -251,9 +262,15 @@
             </label>
 
             <label class="field">
-              <span>Monthly expense today</span>
-              <input type="number" id="monthlyExpense" min="0" step="1000" value="50000" />
-              <small>₹ in today's money</small>
+              <span>Monthly expense (general)</span>
+              <input type="number" id="monthlyExpense" min="0" step="1000" value="60000" />
+              <small>food, housing, leisure (today's ₹)</small>
+            </label>
+
+            <label class="field">
+              <span>Monthly healthcare</span>
+              <input type="number" id="monthlyHealth" min="0" step="500" value="8000" />
+              <small>insurance + meds (today's ₹)</small>
             </label>
 
             <label class="field">
@@ -269,15 +286,27 @@
             </label>
 
             <label class="field">
-              <span>Inflation</span>
+              <span>General inflation</span>
               <input type="number" id="inflation" min="0" max="20" step="0.1" value="6" />
               <small>% per year</small>
+            </label>
+
+            <label class="field">
+              <span>Healthcare inflation</span>
+              <input type="number" id="healthInflation" min="0" max="25" step="0.1" value="10" />
+              <small>% per year (silent killer)</small>
             </label>
 
             <label class="field">
               <span>SIP step-up</span>
               <input type="number" id="stepUp" min="0" max="30" step="0.5" value="5" />
               <small>% increase per year</small>
+            </label>
+
+            <label class="field">
+              <span>Annual top-up</span>
+              <input type="number" id="annualTopUp" min="0" step="5000" value="0" />
+              <small>₹ extra lump added yearly</small>
             </label>
           </div>
 
@@ -312,7 +341,7 @@
               <div class="card-sub" id="lastsTillSub">based on your inputs</div>
             </div>
             <div class="card">
-              <div class="card-label">Shortfall / surplus</div>
+              <div class="card-label">Legacy left at end of plan</div>
               <div class="card-value" id="shortfall">—</div>
               <div class="card-sub" id="shortfallSub">at end of life expectancy</div>
             </div>
@@ -323,6 +352,40 @@
             </div>
           </div>
 
+          <div class="cards cards-secondary">
+            <div class="card subtle">
+              <div class="card-label">Magic Year</div>
+              <div class="card-value" id="magicYear">—</div>
+              <div class="card-sub" id="magicYearSub">when growth overtakes contributions</div>
+            </div>
+            <div class="card subtle">
+              <div class="card-label">Wealth multiplier</div>
+              <div class="card-value" id="wealthMultiplier">—</div>
+              <div class="card-sub" id="wealthMultiplierSub">corpus ÷ total invested</div>
+            </div>
+            <div class="card subtle">
+              <div class="card-label">Final-year withdrawal</div>
+              <div class="card-value" id="finalYearWithdraw">—</div>
+              <div class="card-sub" id="finalYearWithdrawSub">monthly need at end of plan</div>
+            </div>
+            <div class="card subtle">
+              <div class="card-label">Total invested</div>
+              <div class="card-value" id="totalInvested">—</div>
+              <div class="card-sub" id="totalInvestedSub">your contributions only</div>
+            </div>
+            <div class="card subtle warn-card">
+              <div class="card-label">Cost of starting 10 yrs late</div>
+              <div class="card-value" id="costOfDelay">—</div>
+              <div class="card-sub" id="costOfDelaySub">extra SIP needed if you wait</div>
+            </div>
+          </div>
+
+          <div class="breakdown">
+            <h4>Year-1-of-retirement expense breakdown</h4>
+            <p class="breakdown-sub">What ₹<span id="bdGenToday">60,000</span> + ₹<span id="bdHealthToday">8,000</span>/month becomes after <span id="bdYears">30</span> years of inflation:</p>
+            <ul class="bd-list" id="bdList"></ul>
+          </div>
+
           <div class="chart-wrap">
             <h4>Corpus over your lifetime</h4>
             <canvas id="chart" width="900" height="320" aria-label="Corpus over time chart" role="img"></canvas>
@@ -330,6 +393,7 @@
               <span><i class="sw" style="background:#22c55e"></i>Accumulation phase</span>
               <span><i class="sw" style="background:#0ea5e9"></i>Retirement phase</span>
               <span><i class="sw" style="background:#ef4444"></i>Shortfall</span>
+              <span><i class="sw" style="background:#f59e0b"></i>Magic Year</span>
             </div>
           </div>
         </section>
@@ -348,18 +412,23 @@
         <ol class="steps">
           <li>
             <strong>Project your corpus to retirement.</strong>
-            For SIP we compound monthly with optional annual step-up. For lumpsum we compound annually.
-            Your existing corpus grows alongside.
+            For SIP we compound monthly with optional annual step-up and annual top-ups.
+            For lumpsum we compound annually. Your existing corpus grows alongside.
           </li>
           <li>
-            <strong>Inflate today's expense to year of retirement.</strong>
-            Monthly expense is grown at your inflation rate up to your retirement age, giving us the first-year
-            withdrawal in future rupees.
+            <strong>Inflate today's expenses to year of retirement.</strong>
+            <em>General</em> expenses grow at general inflation; <em>healthcare</em> grows at its own (typically higher)
+            rate. The two are summed to give the first-year retirement withdrawal in future rupees.
           </li>
           <li>
             <strong>Simulate retirement year by year.</strong>
-            Each year we subtract that year's expense (grown by inflation) and grow the remainder at your
-            post-retirement return — until the corpus runs out, or you reach life expectancy.
+            Each year we subtract that year's combined expense (general + healthcare, each grown at its own inflation)
+            and grow the remainder at your post-retirement return — until the corpus runs out, or you reach life expectancy.
+          </li>
+          <li>
+            <strong>Surface the milestones.</strong>
+            We compute the <em>Magic Year</em> (when annual returns first exceed annual contributions), the
+            <em>wealth multiplier</em> (corpus ÷ total invested), and the cost of waiting 10 more years to start.
           </li>
           <li>
             <strong>If there is a shortfall, we solve for the extra SIP needed.</strong>
@@ -436,8 +505,33 @@
         </details>
 
         <details>
+          <summary>Why is healthcare inflated separately at 10%?</summary>
+          <p>India's medical inflation has run at <strong>~10–14%</strong> for the last decade — roughly double general CPI. Hospital bills, insurance premiums, and chronic-care medication all compound much faster than groceries. Lumping healthcare into the general 6–8% inflation bucket consistently <em>under-projects</em> retirement needs by 20–30%. This calculator separates it so the silent killer is visible.</p>
+        </details>
+
+        <details>
+          <summary>What is "annual top-up" and when do I use it?</summary>
+          <p>Beyond your monthly SIP, you can add a fixed lump every year — a bonus, RSU vest, freelance income, or tax refund redirected to your retirement bucket. The top-up is added at the end of each year of the accumulation phase and compounds with everything else. Even a ₹1L annual top-up moves the needle hard over 25 years.</p>
+        </details>
+
+        <details>
+          <summary>What is the "Magic Year"?</summary>
+          <p>The Magic Year is the point in your accumulation timeline where your corpus growth (returns) exceeds your contributions in that year — i.e., your money is now earning more than you're saving. After the Magic Year, you're effectively along for the compounding ride. For a 25-year-old starting a ₹20k SIP at 12%, this typically arrives around year 12–14.</p>
+        </details>
+
+        <details>
+          <summary>What does "wealth multiplier" mean?</summary>
+          <p>It's the ratio of <strong>corpus at retirement</strong> divided by <strong>total amount you invested</strong>. A 5× multiplier means every rupee you put in became five at retirement. Long horizons + equity returns + step-up are what push this number up.</p>
+        </details>
+
+        <details>
           <summary>What is the 4% rule and does it apply in India?</summary>
           <p>The 4% rule (Trinity Study) says you can safely withdraw 4% of your corpus in year one and adjust for inflation, with high probability of not running out over 30 years. India's higher inflation makes 3–3.5% safer for very long retirements (40+ years).</p>
+        </details>
+
+        <details>
+          <summary>Why does "starting 10 years late" cost so much more?</summary>
+          <p>Compounding is exponential — the last decade of accumulation does most of the heavy lifting. Skipping the first 10 years doesn't cost you 10/30 of the corpus; it costs you <strong>roughly 60–70%</strong>. The "Cost of starting 10 yrs late" card shows the exact extra monthly SIP a hypothetical late-starter would need to reach the same plan you've entered.</p>
         </details>
       </div>
     </section>
