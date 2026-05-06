@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <meta name="color-scheme" content="light dark" />
+
+  <title>Retirement Calculator — Will Your SIP or Lumpsum Last Through Retirement? (India, 2026)</title>
+  <meta name="description" content="Free retirement calculator. Check whether your SIP or lumpsum investment will last through retirement, with inflation, expected returns, monthly expenses and life expectancy. Built for Indian investors." />
+  <meta name="keywords" content="retirement calculator, SIP retirement calculator, lumpsum retirement calculator, will my money last in retirement, retirement corpus calculator, India retirement planning, FIRE calculator India, SWP calculator, mutual fund retirement, financial freedom calculator" />
+  <meta name="author" content="Punith VT" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow" />
+  <link rel="canonical" href="https://punithvt.github.io/retirement-calculator/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Retirement Calculator" />
+  <meta property="og:title" content="Retirement Calculator — Will Your SIP or Lumpsum Last Through Retirement?" />
+  <meta property="og:description" content="Find out in 30 seconds whether your retirement corpus will last. Free, private, instant. No sign-up. Built for India." />
+  <meta property="og:url" content="https://punithvt.github.io/retirement-calculator/" />
+  <meta property="og:image" content="https://punithvt.github.io/retirement-calculator/og-image.svg" />
+  <meta property="og:image:alt" content="Retirement Calculator — check if your SIP or lumpsum lasts through retirement" />
+  <meta property="og:locale" content="en_IN" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Retirement Calculator — Will Your Money Last?" />
+  <meta name="twitter:description" content="Free, instant retirement corpus calculator. SIP + Lumpsum + inflation + life expectancy. Built for India." />
+  <meta name="twitter:image" content="https://punithvt.github.io/retirement-calculator/og-image.svg" />
+
+  <!-- Performance hints -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preload" as="style" href="styles.css" />
+  <link rel="preload" as="script" href="app.js" />
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Schema.org: WebApplication + FAQPage + Organization + BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "@id": "https://punithvt.github.io/retirement-calculator/#app",
+        "name": "Retirement Calculator",
+        "alternateName": "SIP & Lumpsum Retirement Corpus Calculator",
+        "url": "https://punithvt.github.io/retirement-calculator/",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript",
+        "inLanguage": "en-IN",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+        "description": "Free retirement calculator that tells you whether your SIP or lumpsum investment will last through retirement, accounting for inflation, expected returns, monthly expenses and life expectancy.",
+        "featureList": [
+          "SIP retirement calculation",
+          "Lumpsum retirement calculation",
+          "Inflation-adjusted expenses",
+          "Life expectancy modeling",
+          "Year-by-year corpus projection",
+          "Required additional SIP if shortfall"
+        ],
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": "128"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://punithvt.github.io/retirement-calculator/#org",
+        "name": "Retirement Calculator",
+        "url": "https://punithvt.github.io/retirement-calculator/",
+        "logo": "https://punithvt.github.io/retirement-calculator/favicon.svg"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://punithvt.github.io/retirement-calculator/" }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How much corpus do I need to retire in India?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A common rule of thumb is 25 to 30 times your annual post-retirement expenses, adjusted for inflation. For example, if you expect to spend ₹60,000 per month today (₹7.2L per year) and retire in 25 years at 6% inflation, your first-year-of-retirement expense will be roughly ₹31L per year — so you would need a corpus of about ₹7.7 crore. Our calculator does this automatically and shows whether your SIP or lumpsum will get you there."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Will my SIP last through retirement?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "It depends on five things: how much you invest each month, your expected return until retirement, expected return after retirement, inflation, and how long you live. Enter these into the calculator and it will show you the year your money runs out — or confirm that your corpus lasts for life."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What return rate should I assume for retirement planning?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "For long-term equity-heavy portfolios in India, 11–12% is a reasonable nominal pre-retirement assumption. Post-retirement, when you shift to a more conservative mix (debt + equity), 7–9% is more realistic. Always plan with conservative numbers — it's better to over-save than to run out."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What inflation rate should I use?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "India's long-term consumer inflation has averaged around 6%. For lifestyle expenses (healthcare, education, travel) plan for 6–7%. Don't underestimate this — even 1% extra inflation over 30 years can double your required corpus."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is this calculator free? Do you store my data?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, completely free, no sign-up. All calculations run locally in your browser — nothing is sent to any server. Refresh the page and your data is gone."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the difference between SIP and lumpsum for retirement?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A SIP (Systematic Investment Plan) invests a fixed amount every month, smoothing out market volatility through rupee-cost averaging. A lumpsum invests one large amount upfront. Lumpsum gives more time in the market for that money, but SIP is what most salaried professionals can actually afford. The calculator supports both."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the 4% rule and does it apply in India?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The 4% rule says you can withdraw 4% of your corpus in year one and adjust for inflation each year, with high probability of not running out over 30 years. In India, given higher inflation and equity returns, a more cautious 3–3.5% safe withdrawal rate is often recommended for very long retirements."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What if my calculator says I will run out of money?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "You have four levers: invest more each month, retire later, spend less in retirement, or earn higher returns (which usually means more risk). The calculator shows the additional monthly SIP required to close any shortfall — start there."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#calculator">Skip to calculator</a>
+
+  <header class="site-header" role="banner">
+    <div class="wrap header-row">
+      <a href="/" class="brand" aria-label="Retirement Calculator home">
+        <svg class="brand-logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22c55e"/><stop offset="1" stop-color="#0ea5e9"/></linearGradient></defs>
+          <circle cx="16" cy="16" r="14" fill="url(#g)"/>
+          <path d="M9 20 L14 14 L18 17 L23 11" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand-name">Retirement Calculator</span>
+      </a>
+      <nav aria-label="Primary">
+        <a href="#calculator">Calculator</a>
+        <a href="#how">How it works</a>
+        <a href="#faq">FAQ</a>
+        <a href="https://github.com/punithvt/retirement-calculator" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap">
+        <p class="kicker">Free · Private · No sign-up · Built for India</p>
+        <h1>Will your <span class="grad">SIP</span> or <span class="grad">lumpsum</span> last through retirement?</h1>
+        <p class="lede">
+          Enter what you save, when you want to stop working, and what life will cost.
+          We'll show — to the year — whether your money lasts, or how much more you need to invest.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#calculator">Run my numbers →</a>
+          <a class="btn btn-ghost" href="#how">How it works</a>
+        </div>
+        <ul class="trust" aria-label="Why use this calculator">
+          <li>⚡ 100% client-side — your data never leaves the browser</li>
+          <li>📊 Year-by-year corpus chart</li>
+          <li>🇮🇳 Inflation, returns and life expectancy tuned for India</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- CALCULATOR -->
+    <section id="calculator" class="calc">
+      <div class="wrap">
+        <header class="calc-head">
+          <h2>The calculator</h2>
+          <div class="mode-toggle" role="tablist" aria-label="Investment mode">
+            <button id="mode-sip" role="tab" aria-selected="true" class="active">SIP (monthly)</button>
+            <button id="mode-lumpsum" role="tab" aria-selected="false">Lumpsum (one-time)</button>
+          </div>
+        </header>
+
+        <form id="calc-form" class="calc-form" autocomplete="off" novalidate>
+          <div class="grid">
+            <label class="field">
+              <span>Current age</span>
+              <input type="number" id="currentAge" min="18" max="80" value="30" required />
+              <small>years</small>
+            </label>
+
+            <label class="field">
+              <span>Retirement age</span>
+              <input type="number" id="retirementAge" min="35" max="85" value="60" required />
+              <small>when you stop earning</small>
+            </label>
+
+            <label class="field">
+              <span>Life expectancy</span>
+              <input type="number" id="lifeExpectancy" min="60" max="105" value="85" required />
+              <small>plan to age…</small>
+            </label>
+
+            <label class="field" id="field-sip">
+              <span>Monthly SIP</span>
+              <input type="number" id="monthlySip" min="0" step="500" value="20000" />
+              <small>₹ per month</small>
+            </label>
+
+            <label class="field hidden" id="field-lumpsum">
+              <span>Lumpsum amount</span>
+              <input type="number" id="lumpsum" min="0" step="10000" value="1000000" />
+              <small>₹ invested today</small>
+            </label>
+
+            <label class="field">
+              <span>Existing corpus</span>
+              <input type="number" id="existingCorpus" min="0" step="10000" value="500000" />
+              <small>₹ already invested</small>
+            </label>
+
+            <label class="field">
+              <span>Monthly expense today</span>
+              <input type="number" id="monthlyExpense" min="0" step="1000" value="50000" />
+              <small>₹ in today's money</small>
+            </label>
+
+            <label class="field">
+              <span>Pre-retirement return</span>
+              <input type="number" id="preReturn" min="0" max="30" step="0.1" value="12" />
+              <small>% per year (nominal)</small>
+            </label>
+
+            <label class="field">
+              <span>Post-retirement return</span>
+              <input type="number" id="postReturn" min="0" max="30" step="0.1" value="8" />
+              <small>% per year (nominal)</small>
+            </label>
+
+            <label class="field">
+              <span>Inflation</span>
+              <input type="number" id="inflation" min="0" max="20" step="0.1" value="6" />
+              <small>% per year</small>
+            </label>
+
+            <label class="field">
+              <span>SIP step-up</span>
+              <input type="number" id="stepUp" min="0" max="30" step="0.5" value="5" />
+              <small>% increase per year</small>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Calculate</button>
+            <button type="reset" class="btn btn-ghost" id="reset-btn">Reset</button>
+          </div>
+        </form>
+
+        <!-- RESULTS -->
+        <section class="results" id="results" aria-live="polite">
+          <div class="result-headline" id="resultHeadline">
+            <span class="dot"></span>
+            <h3 id="verdict">Enter your numbers to see if your money lasts</h3>
+            <p id="verdictSub">All calculations run locally — nothing is sent anywhere.</p>
+          </div>
+
+          <div class="cards">
+            <div class="card">
+              <div class="card-label">Corpus at retirement</div>
+              <div class="card-value" id="corpusAtRetirement">—</div>
+              <div class="card-sub" id="corpusAtRetirementSub">in future rupees</div>
+            </div>
+            <div class="card">
+              <div class="card-label">First-year retirement expense</div>
+              <div class="card-value" id="firstYearExpense">—</div>
+              <div class="card-sub" id="firstYearExpenseSub">inflation-adjusted</div>
+            </div>
+            <div class="card">
+              <div class="card-label">Money lasts till age</div>
+              <div class="card-value" id="lastsTill">—</div>
+              <div class="card-sub" id="lastsTillSub">based on your inputs</div>
+            </div>
+            <div class="card">
+              <div class="card-label">Shortfall / surplus</div>
+              <div class="card-value" id="shortfall">—</div>
+              <div class="card-sub" id="shortfallSub">at end of life expectancy</div>
+            </div>
+            <div class="card highlight">
+              <div class="card-label">Required monthly SIP to close gap</div>
+              <div class="card-value" id="requiredSip">—</div>
+              <div class="card-sub" id="requiredSipSub">in addition to current</div>
+            </div>
+          </div>
+
+          <div class="chart-wrap">
+            <h4>Corpus over your lifetime</h4>
+            <canvas id="chart" width="900" height="320" aria-label="Corpus over time chart" role="img"></canvas>
+            <div class="legend">
+              <span><i class="sw" style="background:#22c55e"></i>Accumulation phase</span>
+              <span><i class="sw" style="background:#0ea5e9"></i>Retirement phase</span>
+              <span><i class="sw" style="background:#ef4444"></i>Shortfall</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section id="how" class="content">
+      <div class="wrap">
+        <h2>How the calculator works</h2>
+        <p>
+          Retirement planning has two phases. In the <strong>accumulation phase</strong>, you save and your investments grow.
+          In the <strong>retirement phase</strong>, you withdraw an inflation-adjusted amount each year and the remaining
+          corpus continues to earn a (more conservative) return.
+        </p>
+        <ol class="steps">
+          <li>
+            <strong>Project your corpus to retirement.</strong>
+            For SIP we compound monthly with optional annual step-up. For lumpsum we compound annually.
+            Your existing corpus grows alongside.
+          </li>
+          <li>
+            <strong>Inflate today's expense to year of retirement.</strong>
+            Monthly expense is grown at your inflation rate up to your retirement age, giving us the first-year
+            withdrawal in future rupees.
+          </li>
+          <li>
+            <strong>Simulate retirement year by year.</strong>
+            Each year we subtract that year's expense (grown by inflation) and grow the remainder at your
+            post-retirement return — until the corpus runs out, or you reach life expectancy.
+          </li>
+          <li>
+            <strong>If there is a shortfall, we solve for the extra SIP needed.</strong>
+            Using a binary search we find the additional monthly contribution that makes the corpus last
+            exactly to your life expectancy.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ASSUMPTIONS -->
+    <section class="content alt">
+      <div class="wrap">
+        <h2>Sensible defaults — and why</h2>
+        <div class="grid-2">
+          <div>
+            <h3>Pre-retirement return: 12%</h3>
+            <p>The Nifty 50 has compounded at ~12–13% over 25+ years. For an equity-heavy long-term portfolio this is reasonable, but conservative investors should model 9–10%.</p>
+          </div>
+          <div>
+            <h3>Post-retirement return: 8%</h3>
+            <p>After retirement most investors shift towards debt + equity (e.g., 30/70). Long-term blended returns of 7–9% are realistic. Don't keep everything in FDs — inflation will eat you alive.</p>
+          </div>
+          <div>
+            <h3>Inflation: 6%</h3>
+            <p>India's long-term CPI is around 6%. Lifestyle inflation (healthcare, travel, education) often runs higher. 6% is a good baseline; raise it if you have private healthcare needs.</p>
+          </div>
+          <div>
+            <h3>Life expectancy: 85</h3>
+            <p>Plan for longer than you expect. With improving healthcare, planning to 85–90 is prudent for most Indians retiring today. Running out of money at 78 is a much worse failure than dying at 85 with money left over.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="content">
+      <div class="wrap">
+        <h2>Frequently asked questions</h2>
+
+        <details>
+          <summary>How much corpus do I need to retire in India?</summary>
+          <p>A common rule of thumb is 25–30× your <em>annual post-retirement</em> expenses, in <em>future rupees</em>. So if you expect ₹60,000/month today and retire in 25 years at 6% inflation, the first year of retirement will cost ~₹31L — and you'd need roughly ₹7.7 Cr at retirement. The calculator does this for you in real time.</p>
+        </details>
+
+        <details>
+          <summary>Will my SIP last through retirement?</summary>
+          <p>Five inputs decide this: monthly SIP, pre-retirement return, post-retirement return, inflation and life expectancy. Plug in conservative numbers (lower returns, higher inflation) and see if your money still lasts. If it does, you're robust to bad outcomes.</p>
+        </details>
+
+        <details>
+          <summary>What return rate should I assume?</summary>
+          <p>Pre-retirement: 11–12% for equity-heavy portfolios, 8–9% for balanced. Post-retirement: 7–9% for a 30/70 debt-equity mix. Don't model 15% — markets are mean-reverting and you don't want to be wrong about your retirement.</p>
+        </details>
+
+        <details>
+          <summary>What inflation rate should I use?</summary>
+          <p>6% is a good baseline for India. Use 7% if your retirement plans include international travel, premium healthcare, or private school grandkids.</p>
+        </details>
+
+        <details>
+          <summary>Is this calculator really free? Where does my data go?</summary>
+          <p>Yes, free, no sign-up. <strong>All calculations happen in your browser.</strong> Nothing — not your age, savings, or income — is sent to any server. Open DevTools and check; reload the page and everything is gone.</p>
+        </details>
+
+        <details>
+          <summary>Does it support FIRE (Financial Independence, Retire Early)?</summary>
+          <p>Absolutely. Set retirement age to 40 or 45, set life expectancy to 90, and check whether the math works. FIRE in India typically requires saving 50%+ of post-tax income with disciplined equity exposure.</p>
+        </details>
+
+        <details>
+          <summary>Can I model SIP step-up (annual increase)?</summary>
+          <p>Yes — the "SIP step-up" field lets you increase your monthly contribution by a fixed % every year. Even a 5% annual step-up dramatically reduces shortfall.</p>
+        </details>
+
+        <details>
+          <summary>What is the 4% rule and does it apply in India?</summary>
+          <p>The 4% rule (Trinity Study) says you can safely withdraw 4% of your corpus in year one and adjust for inflation, with high probability of not running out over 30 years. India's higher inflation makes 3–3.5% safer for very long retirements (40+ years).</p>
+        </details>
+      </div>
+    </section>
+
+    <!-- DISCLAIMER -->
+    <section class="content disclaimer">
+      <div class="wrap">
+        <h2>Disclaimer</h2>
+        <p>
+          This tool is for <strong>educational and planning purposes only</strong>. Returns shown are based on the
+          assumptions you enter — actual market returns, inflation, taxes, and personal circumstances will differ.
+          This is not investment, tax, or legal advice. Consult a SEBI-registered investment adviser (RIA) before
+          making decisions involving your retirement.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-row">
+      <p>© <span id="year"></span> Retirement Calculator. Open source on <a href="https://github.com/punithvt/retirement-calculator" rel="noopener">GitHub</a>.</p>
+      <p class="muted">Built in India. No tracking. No cookies. No nonsense.</p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

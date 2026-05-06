@@ -1,0 +1,14 @@
+{
+  "name": "Retirement Calculator",
+  "short_name": "Retirement",
+  "description": "Free retirement calculator — check if your SIP or lumpsum will last through retirement.",
+  "start_url": "/retirement-calculator/",
+  "scope": "/retirement-calculator/",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "lang": "en-IN",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
