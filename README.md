@@ -352,8 +352,6 @@ This calculator was built as an open-source contribution to Indian personal fina
 [![GitHub](https://img.shields.io/badge/GitHub-PunithVT-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/PunithVT)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-punithvt-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/punithvt)
 [![Email](https://img.shields.io/badge/Email-punithvt%40gmail.com-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:punithvt@gmail.com)
-[![Kaggle](https://img.shields.io/badge/Kaggle-punithvt-20BEFF?style=for-the-badge&logo=kaggle&logoColor=white)](https://kaggle.com/punithvt)
-[![HackerRank](https://img.shields.io/badge/HackerRank-punithvt-2EC866?style=for-the-badge&logo=hackerrank&logoColor=white)](https://www.hackerrank.com/punithvt)
 
 ### Support this work
 
