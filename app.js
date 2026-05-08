@@ -558,20 +558,50 @@
     };
   }
 
+  // Non-blocking validation — paints inline error markers and returns
+  // whether the inputs form a valid retirement plan to simulate.
   function validate(inputs) {
-    if (inputs.retirementAge <= inputs.currentAge) {
-      alert("Retirement age must be greater than current age.");
-      return false;
+    const errors = {};
+    // Only flag age relationships when both values are filled in plausibly,
+    // so users can keep typing without being interrupted mid-entry.
+    if (inputs.currentAge >= 18 && inputs.retirementAge > 0 &&
+        inputs.retirementAge <= inputs.currentAge) {
+      errors.retirementAge = "Must be greater than current age";
     }
-    if (inputs.lifeExpectancy <= inputs.retirementAge) {
-      alert("Life expectancy must be greater than retirement age.");
-      return false;
+    if (inputs.retirementAge > 0 && inputs.lifeExpectancy > 0 &&
+        inputs.lifeExpectancy <= inputs.retirementAge) {
+      errors.lifeExpectancy = "Must be greater than retirement age";
     }
-    return true;
+    paintFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  }
+
+  function paintFieldErrors(errors) {
+    ["currentAge", "retirementAge", "lifeExpectancy"].forEach((id) => {
+      const input = $(id);
+      if (!input) return;
+      const wrap = input.closest(".field");
+      const msg = errors[id];
+      if (wrap) wrap.classList.toggle("field-invalid", !!msg);
+      let errEl = wrap && wrap.querySelector(".field-error");
+      if (msg) {
+        if (!errEl) {
+          errEl = document.createElement("small");
+          errEl.className = "field-error";
+          errEl.setAttribute("role", "alert");
+          wrap.appendChild(errEl);
+        }
+        errEl.textContent = msg;
+      } else if (errEl) {
+        errEl.remove();
+      }
+    });
   }
 
   function calculate() {
     const inputs = readInputs();
+    // If the age relationships aren't valid, surface the inline error
+    // and skip the simulation — but never alert() and never block typing.
     if (!validate(inputs)) return;
     const sim = simulate(inputs);
     const additional = sim.ranOut ? requiredAdditionalSip(inputs) : 0;
@@ -609,7 +639,10 @@
     document.querySelectorAll("#calc-form input").forEach((el) => {
       el.addEventListener("input", () => {
         clearTimeout(window.__rcTimer);
-        window.__rcTimer = setTimeout(calculate, 250);
+        // Longer debounce on the age fields so the user can finish typing
+        // before validation flags an incomplete relationship.
+        const delay = ["currentAge", "retirementAge", "lifeExpectancy"].includes(el.id) ? 600 : 350;
+        window.__rcTimer = setTimeout(calculate, delay);
       });
     });
 
