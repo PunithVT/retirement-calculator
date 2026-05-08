@@ -273,48 +273,57 @@
               <small>insurance + meds (today's ₹)</small>
             </label>
 
-            <label class="field">
-              <span>Pre-retirement return</span>
-              <input type="number" inputmode="decimal" id="preReturn" min="0" max="30" step="0.1" value="12" />
-              <small>% per year (nominal)</small>
-            </label>
-
-            <label class="field">
-              <span>Post-retirement return</span>
-              <input type="number" inputmode="decimal" id="postReturn" min="0" max="30" step="0.1" value="8" />
-              <small>% per year (nominal)</small>
-            </label>
-
-            <label class="field">
-              <span>General inflation</span>
-              <input type="number" inputmode="decimal" id="inflation" min="0" max="20" step="0.1" value="6" />
-              <small>% per year</small>
-            </label>
-
-            <label class="field">
-              <span>Healthcare inflation</span>
-              <input type="number" inputmode="decimal" id="healthInflation" min="0" max="25" step="0.1" value="10" />
-              <small>% per year (silent killer)</small>
-            </label>
-
-            <label class="field">
-              <span>SIP step-up</span>
-              <input type="number" inputmode="decimal" id="stepUp" min="0" max="30" step="0.5" value="5" />
-              <small>% increase per year</small>
-            </label>
-
-            <label class="field">
-              <span>Annual top-up</span>
-              <input type="number" inputmode="decimal" id="annualTopUp" min="0" step="5000" value="0" />
-              <small>₹ extra lump added yearly</small>
-            </label>
-
-            <label class="field">
-              <span>Withdrawal step-up</span>
-              <input type="number" inputmode="decimal" id="withdrawalStepUp" min="0" max="20" step="0.5" placeholder="follows inflation" />
-              <small>% per year (blank = inflation)</small>
-            </label>
           </div>
+
+          <details class="advanced">
+            <summary>
+              <span>Advanced settings</span>
+              <small>returns, inflation, step-up, top-up</small>
+            </summary>
+            <div class="grid">
+              <label class="field">
+                <span>Pre-retirement return</span>
+                <input type="number" inputmode="decimal" id="preReturn" min="0" max="30" step="0.1" value="12" />
+                <small>% per year (nominal)</small>
+              </label>
+
+              <label class="field">
+                <span>Post-retirement return</span>
+                <input type="number" inputmode="decimal" id="postReturn" min="0" max="30" step="0.1" value="8" />
+                <small>% per year (nominal)</small>
+              </label>
+
+              <label class="field">
+                <span>General inflation</span>
+                <input type="number" inputmode="decimal" id="inflation" min="0" max="20" step="0.1" value="6" />
+                <small>% per year</small>
+              </label>
+
+              <label class="field">
+                <span>Healthcare inflation</span>
+                <input type="number" inputmode="decimal" id="healthInflation" min="0" max="25" step="0.1" value="10" />
+                <small>% per year (silent killer)</small>
+              </label>
+
+              <label class="field">
+                <span>SIP step-up</span>
+                <input type="number" inputmode="decimal" id="stepUp" min="0" max="30" step="0.5" value="5" />
+                <small>% increase per year</small>
+              </label>
+
+              <label class="field">
+                <span>Annual top-up</span>
+                <input type="number" inputmode="decimal" id="annualTopUp" min="0" step="5000" value="0" />
+                <small>₹ extra lump added yearly</small>
+              </label>
+
+              <label class="field">
+                <span>Withdrawal step-up</span>
+                <input type="number" inputmode="decimal" id="withdrawalStepUp" min="0" max="20" step="0.5" placeholder="auto" />
+                <small>% per year (blank = inflation)</small>
+              </label>
+            </div>
+          </details>
 
           <div class="actions">
             <button type="submit" class="btn btn-primary">Calculate</button>

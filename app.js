@@ -567,6 +567,8 @@
     }
 
     // Vertical markers ------------------------------------------------------
+    const compactLabels = cssW < 520;
+
     // Retirement
     if (retAge != null) {
       const x = xFor(retAge);
@@ -575,7 +577,8 @@
       ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + h); ctx.stroke();
       ctx.setLineDash([]);
-      drawTag(ctx, x, PAD.top - 2, `Retire @ ${retAge}`, colors.fg, colors.bgAlt, colors.border);
+      const lbl = compactLabels ? `R ${retAge}` : `Retire @ ${retAge}`;
+      drawTag(ctx, x, PAD.top - 2, lbl, colors.fg, colors.bgAlt, colors.border);
     }
 
     // Magic Year
@@ -586,7 +589,8 @@
       ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + h); ctx.stroke();
       ctx.setLineDash([]);
-      drawTag(ctx, x, PAD.top - 2, `Magic Yr ${sim.magicYear}`, "#f59e0b", "#fff7ed", "#fde68a");
+      const lbl = compactLabels ? `M ${sim.magicYear}` : `Magic Yr ${sim.magicYear}`;
+      drawTag(ctx, x, PAD.top - 2, lbl, "#f59e0b", "#fff7ed", "#fde68a");
     }
 
     // Peak corpus marker
@@ -599,8 +603,9 @@
       ctx.strokeStyle = "#fff";
       ctx.lineWidth = 1.5;
       ctx.stroke();
-      // Avoid labelling if peak is at retirement (already labelled there)
-      if (Math.abs(peak.age - retAge) > 0) {
+      // Skip the label on narrow canvases (it crowds the retire/magic chips)
+      // and when peak is at retirement age (already labelled there).
+      if (cssW >= 520 && Math.abs(peak.age - retAge) > 0) {
         const lbl = `Peak ${fmtINR(peak.corpus)}`;
         ctx.font = "11px ui-sans-serif, system-ui, sans-serif";
         const tw = ctx.measureText(lbl).width + 12;
@@ -617,7 +622,8 @@
       ctx.fillStyle = "#ef4444";
       ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke();
-      drawTag(ctx, x, y - 24, `Runs out @ ${ageOut}`, "#b91c1c", "#fee2e2", "#fca5a5");
+      const lbl = compactLabels ? `Out ${ageOut}` : `Runs out @ ${ageOut}`;
+      drawTag(ctx, x, y - 24, lbl, "#b91c1c", "#fee2e2", "#fca5a5");
     }
 
     // Hover indicator on top of everything
@@ -701,14 +707,25 @@
     if (canvas.__rcHoverBound) return;
     canvas.__rcHoverBound = true;
     canvas.addEventListener("mousemove", onHover);
-    canvas.addEventListener("touchmove", (e) => {
+    // Touch support: tap or drag on the chart shows the tooltip; tap outside hides it.
+    const handleTouch = (e) => {
       if (!e.touches.length) return;
       const t = e.touches[0];
       onHover({ clientX: t.clientX, clientY: t.clientY, target: canvas });
-    }, { passive: true });
+    };
+    canvas.addEventListener("touchstart", handleTouch, { passive: true });
+    canvas.addEventListener("touchmove", handleTouch, { passive: true });
     canvas.addEventListener("mouseleave", () => {
       if (chartCtx) { chartCtx.hoverAge = null; paint(); hideTip(); }
     });
+    // Tap outside the chart on touch devices to dismiss tooltip
+    document.addEventListener("touchstart", (e) => {
+      if (!chartCtx || chartCtx.hoverAge == null) return;
+      const tip = document.getElementById("rc-chart-tip");
+      if (e.target === canvas) return;
+      if (tip && tip.contains(e.target)) return;
+      chartCtx.hoverAge = null; paint(); hideTip();
+    }, { passive: true });
   }
 
   function onHover(e) {
@@ -929,6 +946,12 @@
 
     bindPresets();
     $("year").textContent = new Date().getFullYear();
+
+    // Advanced settings: collapsed on phones, open on wider screens.
+    const adv = document.querySelector(".advanced");
+    if (adv) {
+      adv.open = window.matchMedia("(min-width: 720px)").matches;
+    }
 
     setMode("sip");
     calculate();
