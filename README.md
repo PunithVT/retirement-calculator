@@ -6,9 +6,9 @@
 
 A free, private, blazing-fast retirement-corpus planner — built for India, usable anywhere.
 
-**[▶ Try it live](https://punithvt.github.io/retirement-calculator/)**
+**[▶ Try it live](https://punithvt.github.io/retirement-plan/)**
 
-[![Live on GitHub Pages](https://img.shields.io/badge/live-punithvt.github.io-22c55e?logo=github&logoColor=white)](https://punithvt.github.io/retirement-calculator/)
+[![Live on GitHub Pages](https://img.shields.io/badge/live-punithvt.github.io-22c55e?logo=github&logoColor=white)](https://punithvt.github.io/retirement-plan/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Zero dependencies](https://img.shields.io/badge/dependencies-0-22c55e)](#tech-stack)
 [![Zero tracking](https://img.shields.io/badge/tracking-none-22c55e)](#privacy-first)
@@ -44,7 +44,7 @@ Here's why that question is so hard to answer in India specifically:
 
 > **If you are 22–35, earning, and unsure whether your retirement plan will hold — start here. It takes 60 seconds and it's free forever.**
 
-**[▶ Run your numbers now](https://punithvt.github.io/retirement-calculator/)**
+**[▶ Run your numbers now](https://punithvt.github.io/retirement-plan/)**
 
 ---
 
@@ -110,8 +110,8 @@ The table above assumes no SIP step-up. If you bump your SIP by 5% per year (whi
 It's just static files. **No build step. No npm install. No webpack config to debug.**
 
 ```bash
-git clone https://github.com/PunithVT/retirement-calculator.git
-cd retirement-calculator
+git clone https://github.com/PunithVT/retirement-plan.git
+cd retirement-plan
 
 # Pick any of these — they all work:
 python3 -m http.server 8000
@@ -213,7 +213,7 @@ Add a `CNAME` file at the root containing your domain, then point a `CNAME` DNS 
 ## Project structure
 
 ```
-retirement-calculator/
+retirement-plan/
 ├── index.html              # Single-page app + SEO content + JSON-LD
 ├── styles.css              # All styles (light + dark, fully responsive)
 ├── app.js                  # Calculator engine, chart, shortfall solver
@@ -281,7 +281,7 @@ After deploying:
 - [ ] **CSV export** of the year-by-year corpus table
 - [ ] **i18n** — Hindi, Tamil, Kannada UI
 
-Vote on what's next via [GitHub Issues](https://github.com/PunithVT/retirement-calculator/issues).
+Vote on what's next via [GitHub Issues](https://github.com/PunithVT/retirement-plan/issues).
 
 ---
 
@@ -298,8 +298,8 @@ For larger features, open an issue first to discuss.
 
 ```bash
 # typical dev loop
-git clone https://github.com/PunithVT/retirement-calculator.git
-cd retirement-calculator
+git clone https://github.com/PunithVT/retirement-plan.git
+cd retirement-plan
 python3 -m http.server 8000
 # edit, refresh, repeat
 ```
@@ -377,7 +377,7 @@ You can also support by:
 
 <div align="center">
 
-**[Live demo](https://punithvt.github.io/retirement-calculator/)**  ·  [Report a bug](https://github.com/PunithVT/retirement-calculator/issues)  ·  [Request a feature](https://github.com/PunithVT/retirement-calculator/issues/new)  ·  [Star the repo](https://github.com/PunithVT/retirement-calculator)
+**[Live demo](https://punithvt.github.io/retirement-plan/)**  ·  [Report a bug](https://github.com/PunithVT/retirement-plan/issues)  ·  [Request a feature](https://github.com/PunithVT/retirement-plan/issues/new)  ·  [Star the repo](https://github.com/PunithVT/retirement-plan)
 
 If this saved you from a bad retirement plan, please share it with someone who needs it.
 
