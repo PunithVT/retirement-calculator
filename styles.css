@@ -402,7 +402,38 @@ nav[aria-label="Primary"] a:hover { color: var(--fg); text-decoration: none; }
   padding: 20px;
 }
 .chart-wrap h4 { margin: 0 0 12px; font-size: 16px; }
-#chart { width: 100%; height: auto; max-height: 360px; }
+#chart { width: 100%; height: auto; max-height: 360px; cursor: crosshair; }
+
+/* Floating chart tooltip — appended to <body> for positioning */
+.rc-chart-tip {
+  position: absolute;
+  z-index: 100;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, .14);
+  font-size: 13px;
+  color: var(--fg);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: opacity .12s ease;
+  min-width: 180px;
+}
+.rc-chart-tip.visible { opacity: 1; transform: translateY(0); }
+.rc-chart-tip .tip-age { font-weight: 800; font-size: 14px; margin-bottom: 6px; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.rc-chart-tip .tip-phase {
+  font-size: 11px; font-weight: 600;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em;
+}
+.rc-chart-tip .tip-row {
+  display: flex; justify-content: space-between; gap: 16px;
+  font-size: 12.5px; padding: 2px 0; font-variant-numeric: tabular-nums;
+}
+.rc-chart-tip .tip-row span { color: var(--muted); }
+.rc-chart-tip .tip-row strong { font-weight: 700; }
+.rc-chart-tip .tip-flat strong { color: var(--muted); }
 .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 10px; color: var(--muted); font-size: 13px; }
 .legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
 

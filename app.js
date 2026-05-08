@@ -386,20 +386,22 @@
   }
 
   // -- Chart (canvas) --------------------------------------------------------
+  // Module-scoped state so hover redraws don't have to recompute geometry.
+  let chartCtx = null;
+
   function drawChart(sim, flatSim) {
     const canvas = $("chart");
     const ctx = canvas.getContext("2d");
     const dpr = window.devicePixelRatio || 1;
 
     const cssW = canvas.clientWidth || 900;
-    const cssH = 320;
+    const cssH = cssW < 480 ? 260 : 340;
     canvas.width = cssW * dpr;
     canvas.height = cssH * dpr;
     canvas.style.height = cssH + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, cssW, cssH);
 
-    const PAD = { top: 20, right: 20, bottom: 36, left: 70 };
+    const PAD = { top: 28, right: 24, bottom: 38, left: 64 };
     const w = cssW - PAD.left - PAD.right;
     const h = cssH - PAD.top - PAD.bottom;
 
@@ -416,122 +418,396 @@
     );
 
     const css = getComputedStyle(document.body);
-    const fg = css.getPropertyValue("--fg") || "#0b1220";
-    const muted = css.getPropertyValue("--muted") || "#64748b";
-    const border = css.getPropertyValue("--border") || "#e2e8f0";
+    const fg = (css.getPropertyValue("--fg") || "#0b1220").trim();
+    const muted = (css.getPropertyValue("--muted") || "#64748b").trim();
+    const border = (css.getPropertyValue("--border") || "#e2e8f0").trim();
+    const bgAlt = (css.getPropertyValue("--bg-alt") || "#f1f5f9").trim();
 
-    ctx.strokeStyle = border.trim();
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(PAD.left, PAD.top);
-    ctx.lineTo(PAD.left, PAD.top + h);
-    ctx.lineTo(PAD.left + w, PAD.top + h);
-    ctx.stroke();
+    const xFor = (age) => PAD.left + (w * (age - minAge)) / Math.max(1, maxAge - minAge);
+    const yFor = (v) => PAD.top + h - (h * Math.max(0, v)) / maxCorpus;
 
-    ctx.fillStyle = muted.trim();
+    // Persist what hover() needs
+    chartCtx = {
+      canvas, ctx, dpr,
+      cssW, cssH,
+      PAD, w, h,
+      data, flatData,
+      minAge, maxAge, maxCorpus,
+      sim, flatSim,
+      xFor, yFor,
+      colors: { fg, muted, border, bgAlt },
+      hoverAge: null,
+    };
+
+    paint();
+    bindHover();
+  }
+
+  function paint() {
+    const c = chartCtx;
+    if (!c) return;
+    const { ctx, cssW, cssH, PAD, w, h, data, flatData, minAge, maxAge, maxCorpus,
+            sim, xFor, yFor, colors } = c;
+
+    ctx.clearRect(0, 0, cssW, cssH);
+
+    // Y gridlines (round nice ticks)
+    const niceMax = niceCeil(maxCorpus);
+    const tickCount = 4;
     ctx.font = "12px ui-sans-serif, system-ui, sans-serif";
-    ctx.textAlign = "right";
     ctx.textBaseline = "middle";
-    const ticks = 4;
-    for (let t = 0; t <= ticks; t++) {
-      const v = (maxCorpus / ticks) * t;
-      const y = PAD.top + h - (h * t) / ticks;
-      ctx.strokeStyle = border.trim() + "80";
+    for (let t = 0; t <= tickCount; t++) {
+      const v = (niceMax / tickCount) * t;
+      const y = PAD.top + h - (h * v) / maxCorpus;
+      ctx.strokeStyle = colors.border + "60";
+      ctx.lineWidth = 1;
+      ctx.setLineDash(t === 0 ? [] : [2, 4]);
       ctx.beginPath();
       ctx.moveTo(PAD.left, y);
       ctx.lineTo(PAD.left + w, y);
       ctx.stroke();
-      ctx.fillText(fmtINR(v), PAD.left - 8, y);
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = colors.muted;
+      ctx.textAlign = "right";
+      ctx.fillText(fmtINR(v), PAD.left - 10, y);
     }
 
+    // X axis labels at round 5-year intervals (or finer if range is small)
+    const span = maxAge - minAge;
+    const desired = cssW < 480 ? 4 : (cssW < 720 ? 6 : 9);
+    const stepRaw = span / desired;
+    const xStep = stepRaw <= 1 ? 1 : stepRaw <= 2 ? 2 : stepRaw <= 5 ? 5 : 10;
+    const startTick = Math.ceil(minAge / xStep) * xStep;
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
-    const xStep = Math.max(1, Math.round((maxAge - minAge) / 8));
-    for (let age = minAge; age <= maxAge; age += xStep) {
-      const x = PAD.left + (w * (age - minAge)) / Math.max(1, maxAge - minAge);
-      ctx.fillText(age, x, PAD.top + h + 8);
+    ctx.fillStyle = colors.muted;
+    for (let age = startTick; age <= maxAge; age += xStep) {
+      const x = xFor(age);
+      ctx.fillText(age, x, PAD.top + h + 10);
     }
 
-    const xFor = (age) => PAD.left + (w * (age - minAge)) / Math.max(1, maxAge - minAge);
-    const yFor = (v) => PAD.top + h - (h * v) / maxCorpus;
+    // Phase background bands (very subtle): retirement gets a light blue band
+    const retAge = (data.find(d => d.phase === "ret") || {}).age;
+    if (retAge != null) {
+      ctx.fillStyle = "#0ea5e911";
+      ctx.fillRect(xFor(retAge), PAD.top, (xFor(maxAge) - xFor(retAge)), h);
+    }
 
-    const drawSegment = (filterFn, color, fill = true) => {
-      const pts = data.filter(filterFn);
-      if (pts.length < 2) return;
-      ctx.beginPath();
-      pts.forEach((d, idx) => {
-        const x = xFor(d.age), y = yFor(d.corpus);
-        if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      });
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2.4;
-      ctx.stroke();
-
-      if (fill) {
-        ctx.lineTo(xFor(pts[pts.length - 1].age), PAD.top + h);
-        ctx.lineTo(xFor(pts[0].age), PAD.top + h);
-        ctx.closePath();
-        ctx.fillStyle = color + "22";
-        ctx.fill();
-      }
-    };
-
-    // Draw "flat / no step-up" comparison line first (behind main).
+    // Flat / no step-up comparison (behind main)
     if (flatData) {
-      const flatAccPts = flatData.filter(d => d.phase === "acc");
-      if (flatAccPts.length > 1) {
-        ctx.beginPath();
-        flatAccPts.forEach((d, idx) => {
-          const x = xFor(d.age), y = yFor(d.corpus);
-          if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        });
-        ctx.strokeStyle = muted.trim();
+      const flatAcc = flatData.filter(d => d.phase === "acc");
+      if (flatAcc.length > 1) {
+        ctx.strokeStyle = colors.muted;
+        ctx.lineWidth = 1.5;
         ctx.setLineDash([6, 5]);
-        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        flatAcc.forEach((d, i) => {
+          const x = xFor(d.age), y = yFor(d.corpus);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
         ctx.stroke();
         ctx.setLineDash([]);
       }
     }
 
-    const accIdx = data.findIndex(d => d.phase !== "acc");
-    if (accIdx > 0) {
-      drawSegment((_, i) => i <= accIdx, "#22c55e");
-    } else {
-      drawSegment(d => d.phase === "acc", "#22c55e");
-    }
-    drawSegment(d => d.phase === "ret", "#0ea5e9");
-    drawSegment(d => d.phase === "short", "#ef4444", false);
+    // ---------------- Main corpus line: smooth via Catmull-Rom -> bezier ---
+    // Combine accumulation + retirement (excluding zero-padded short tail) into one sequence,
+    // so the green-to-blue transition is seamless. Fill below with a colour gradient.
+    const live = data.filter(d => d.phase !== "short" && d.corpus > 0);
+    const shortTail = data.filter(d => d.phase === "short");
 
-    // Retirement age marker
-    const retAge = data.find(d => d.phase === "ret")?.age ?? null;
-    if (retAge) {
-      const x = xFor(retAge);
-      ctx.strokeStyle = muted.trim() + "80";
-      ctx.setLineDash([4, 4]);
+    if (live.length > 1) {
+      // Fill area first
+      const grad = ctx.createLinearGradient(0, PAD.top, 0, PAD.top + h);
+      grad.addColorStop(0, "#22c55e44");
+      grad.addColorStop(1, "#22c55e08");
+      ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.moveTo(x, PAD.top);
-      ctx.lineTo(x, PAD.top + h);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = fg.trim();
-      ctx.textAlign = "left";
-      ctx.fillText("retirement", x + 4, PAD.top + 4);
+      ctx.moveTo(xFor(live[0].age), PAD.top + h);
+      smoothPath(ctx, live, xFor, yFor);
+      ctx.lineTo(xFor(live[live.length - 1].age), PAD.top + h);
+      ctx.closePath();
+      ctx.fill();
+
+      // Stroke accumulation in green up to retirement, retirement in blue after
+      const accLive = live.filter(d => d.phase === "acc");
+      const retLive = live.filter(d => d.phase === "ret");
+
+      if (accLive.length > 1) {
+        ctx.strokeStyle = "#16a34a";
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        smoothPath(ctx, accLive, xFor, yFor, true);
+        ctx.stroke();
+      }
+      if (retLive.length > 1) {
+        // Connect retirement segment to last accumulation point so there's no gap.
+        const conn = accLive.length ? [accLive[accLive.length - 1], ...retLive] : retLive;
+        ctx.strokeStyle = "#0ea5e9";
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        smoothPath(ctx, conn, xFor, yFor, true);
+        ctx.stroke();
+      }
     }
 
-    // Magic Year marker
+    // Shortfall: clean red zero-line + fade-out box, no floating dashed line
+    if (shortTail.length) {
+      const x0 = xFor(shortTail[0].age);
+      const x1 = xFor(shortTail[shortTail.length - 1].age);
+      ctx.fillStyle = "#ef444420";
+      ctx.fillRect(x0, PAD.top, x1 - x0, h);
+      ctx.strokeStyle = "#ef4444";
+      ctx.lineWidth = 2.6;
+      ctx.beginPath();
+      ctx.moveTo(x0, PAD.top + h - 0.5);
+      ctx.lineTo(x1, PAD.top + h - 0.5);
+      ctx.stroke();
+    }
+
+    // Vertical markers ------------------------------------------------------
+    // Retirement
+    if (retAge != null) {
+      const x = xFor(retAge);
+      ctx.strokeStyle = colors.muted + "AA";
+      ctx.setLineDash([4, 4]);
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + h); ctx.stroke();
+      ctx.setLineDash([]);
+      drawTag(ctx, x, PAD.top - 2, `Retire @ ${retAge}`, colors.fg, colors.bgAlt, colors.border);
+    }
+
+    // Magic Year
     if (sim.magicYear && sim.magicYear >= minAge && sim.magicYear <= maxAge) {
       const x = xFor(sim.magicYear);
       ctx.strokeStyle = "#f59e0b";
       ctx.setLineDash([2, 4]);
-      ctx.beginPath();
-      ctx.moveTo(x, PAD.top);
-      ctx.lineTo(x, PAD.top + h);
-      ctx.stroke();
+      ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + h); ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle = "#f59e0b";
-      ctx.textAlign = "left";
-      ctx.fillText("magic year", x + 4, PAD.top + 18);
+      drawTag(ctx, x, PAD.top - 2, `Magic Yr ${sim.magicYear}`, "#f59e0b", "#fff7ed", "#fde68a");
     }
+
+    // Peak corpus marker
+    let peak = data[0];
+    data.forEach(d => { if (d.corpus > peak.corpus) peak = d; });
+    if (peak && peak.corpus > 0) {
+      const px = xFor(peak.age), py = yFor(peak.corpus);
+      ctx.fillStyle = "#16a34a";
+      ctx.beginPath(); ctx.arc(px, py, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      // Avoid labelling if peak is at retirement (already labelled there)
+      if (Math.abs(peak.age - retAge) > 0) {
+        const lbl = `Peak ${fmtINR(peak.corpus)}`;
+        ctx.font = "11px ui-sans-serif, system-ui, sans-serif";
+        const tw = ctx.measureText(lbl).width + 12;
+        const lx = Math.min(PAD.left + w - tw, Math.max(PAD.left, px - tw / 2));
+        drawTag(ctx, lx + tw / 2, py - 14, lbl, "#15803d", "#dcfce7", "#86efac");
+      }
+    }
+
+    // Money runs out marker
+    if (sim.ranOut) {
+      const ageOut = Math.floor(sim.lastsTill);
+      const x = xFor(ageOut);
+      const y = PAD.top + h;
+      ctx.fillStyle = "#ef4444";
+      ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke();
+      drawTag(ctx, x, y - 24, `Runs out @ ${ageOut}`, "#b91c1c", "#fee2e2", "#fca5a5");
+    }
+
+    // Hover indicator on top of everything
+    drawHover();
+  }
+
+  // ----- helpers ------------------------------------------------------------
+  function smoothPath(ctx, pts, xFor, yFor, beginIsMove) {
+    // Catmull-Rom -> Bezier conversion. Smooth curve through all points.
+    if (pts.length < 2) return;
+    const X = pts.map(p => xFor(p.age));
+    const Y = pts.map(p => yFor(p.corpus));
+    if (beginIsMove) ctx.moveTo(X[0], Y[0]);
+    else ctx.lineTo(X[0], Y[0]);
+    for (let i = 0; i < pts.length - 1; i++) {
+      const x0 = X[i - 1] !== undefined ? X[i - 1] : X[i];
+      const y0 = Y[i - 1] !== undefined ? Y[i - 1] : Y[i];
+      const x1 = X[i], y1 = Y[i];
+      const x2 = X[i + 1], y2 = Y[i + 1];
+      const x3 = X[i + 2] !== undefined ? X[i + 2] : x2;
+      const y3 = Y[i + 2] !== undefined ? Y[i + 2] : y2;
+      const cp1x = x1 + (x2 - x0) / 6;
+      const cp1y = y1 + (y2 - y0) / 6;
+      const cp2x = x2 - (x3 - x1) / 6;
+      const cp2y = y2 - (y3 - y1) / 6;
+      ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x2, y2);
+    }
+  }
+
+  function niceCeil(v) {
+    if (v <= 0) return 1;
+    const exp = Math.pow(10, Math.floor(Math.log10(v)));
+    const m = v / exp;
+    let nm;
+    if (m <= 1) nm = 1;
+    else if (m <= 2) nm = 2;
+    else if (m <= 2.5) nm = 2.5;
+    else if (m <= 5) nm = 5;
+    else nm = 10;
+    return nm * exp;
+  }
+
+  function drawTag(ctx, cx, cy, text, fg, bg, stroke) {
+    ctx.font = "11px ui-sans-serif, system-ui, sans-serif";
+    const padX = 6, padY = 3;
+    const tw = ctx.measureText(text).width;
+    const w = tw + padX * 2;
+    const h = 18;
+    const x = Math.max(cx - w / 2, 2);
+    const y = Math.max(cy - h, 2);
+    ctx.fillStyle = bg;
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 1;
+    roundRect(ctx, x, y, w, h, 4);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = fg;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x + padX, y + h / 2 + 0.5);
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  // -- Hover tooltip ---------------------------------------------------------
+  function bindHover() {
+    if (!chartCtx) return;
+    const { canvas } = chartCtx;
+    if (canvas.__rcHoverBound) return;
+    canvas.__rcHoverBound = true;
+    canvas.addEventListener("mousemove", onHover);
+    canvas.addEventListener("touchmove", (e) => {
+      if (!e.touches.length) return;
+      const t = e.touches[0];
+      onHover({ clientX: t.clientX, clientY: t.clientY, target: canvas });
+    }, { passive: true });
+    canvas.addEventListener("mouseleave", () => {
+      if (chartCtx) { chartCtx.hoverAge = null; paint(); hideTip(); }
+    });
+  }
+
+  function onHover(e) {
+    if (!chartCtx) return;
+    const { canvas, PAD, w, minAge, maxAge } = chartCtx;
+    const rect = canvas.getBoundingClientRect();
+    const cx = e.clientX - rect.left;
+    if (cx < PAD.left || cx > PAD.left + w) {
+      chartCtx.hoverAge = null;
+      paint();
+      hideTip();
+      return;
+    }
+    const age = Math.round(minAge + ((cx - PAD.left) / w) * (maxAge - minAge));
+    chartCtx.hoverAge = Math.max(minAge, Math.min(maxAge, age));
+    paint();
+    showTip(rect);
+  }
+
+  function drawHover() {
+    const c = chartCtx;
+    if (!c || c.hoverAge == null) return;
+    const { ctx, PAD, h, xFor, yFor, data, flatData, colors } = c;
+    const point = data.find(d => d.age === c.hoverAge) || data[data.length - 1];
+    const x = xFor(point.age);
+    ctx.strokeStyle = colors.muted + "AA";
+    ctx.setLineDash([3, 3]);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, PAD.top);
+    ctx.lineTo(x, PAD.top + h);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    if (point.corpus > 0) {
+      const y = yFor(point.corpus);
+      ctx.fillStyle = point.phase === "acc" ? "#16a34a" : "#0ea5e9";
+      ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+    if (flatData) {
+      const fp = flatData.find(d => d.age === c.hoverAge);
+      if (fp && fp.corpus > 0) {
+        const y = yFor(fp.corpus);
+        ctx.fillStyle = colors.muted;
+        ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  }
+
+  function showTip(rect) {
+    const c = chartCtx;
+    if (!c || c.hoverAge == null) return;
+    const tip = ensureTip();
+    const { data, flatData, sim, xFor, PAD, w } = c;
+    const point = data.find(d => d.age === c.hoverAge) || data[data.length - 1];
+    const flat = flatData ? flatData.find(d => d.age === c.hoverAge) : null;
+    const phaseLabel =
+      point.phase === "acc" ? "Building" :
+      point.phase === "ret" ? "Drawing down" :
+      point.phase === "short" ? "Money out" : "";
+
+    const lines = [
+      `<div class="tip-age">Age ${point.age}<span class="tip-phase">${phaseLabel}</span></div>`,
+      `<div class="tip-row"><span>Corpus</span><strong>${fmtINR(point.corpus)}</strong></div>`,
+    ];
+    if (point.expense != null) {
+      lines.push(`<div class="tip-row"><span>Yearly draw</span><strong>${fmtINR(point.expense)}</strong></div>`);
+    }
+    if (flat && flat.corpus > 0 && point.phase === "acc") {
+      lines.push(`<div class="tip-row tip-flat"><span>Flat (no step-up)</span><strong>${fmtINR(flat.corpus)}</strong></div>`);
+    }
+    tip.innerHTML = lines.join("");
+    tip.classList.add("visible");
+
+    // Position tip
+    const x = xFor(point.age);
+    const tipW = tip.offsetWidth;
+    const tipH = tip.offsetHeight;
+    let leftPx = rect.left + window.scrollX + x - tipW / 2;
+    leftPx = Math.max(rect.left + window.scrollX + 4, Math.min(rect.left + window.scrollX + rect.width - tipW - 4, leftPx));
+    let topPx = rect.top + window.scrollY + PAD.top - tipH - 8;
+    if (topPx < window.scrollY + 4) topPx = rect.top + window.scrollY + PAD.top + 14;
+    tip.style.left = leftPx + "px";
+    tip.style.top = topPx + "px";
+  }
+
+  function ensureTip() {
+    let tip = document.getElementById("rc-chart-tip");
+    if (!tip) {
+      tip = document.createElement("div");
+      tip.id = "rc-chart-tip";
+      tip.className = "rc-chart-tip";
+      document.body.appendChild(tip);
+    }
+    return tip;
+  }
+  function hideTip() {
+    const tip = document.getElementById("rc-chart-tip");
+    if (tip) tip.classList.remove("visible");
   }
 
   // -- Event wiring ----------------------------------------------------------
